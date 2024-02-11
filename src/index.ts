@@ -1,10 +1,7 @@
 import * as http from 'node:http';
 import * as crypto from 'node:crypto';
+import { Server } from './server/server';
 
-const port = Number(process.env.PORT) || null;
+const port = Number(process.env.PORT) || 4000;
 
-const server = http.createServer((req, res) => {
-  res.end(crypto.randomUUID({ disableEntropyCache: true }));
-});
-
-server.listen(port);
+const server = new Server(port);
