@@ -19,11 +19,11 @@ export class Server {
                     return;
                 } else {
                     response.writeHead(StatusCodes.NotFound);
-                    response.end(Errors.Message404Endpoint);
+                    response.end(JSON.stringify(Errors.Message404Endpoint));
                 }
             } catch (error) {
                 response.writeHead(StatusCodes.InternalServerError);
-                response.end(Errors.Message500Server);
+                response.end(JSON.stringify(Errors.Message500Server));
             }
         });
     }

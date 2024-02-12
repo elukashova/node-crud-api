@@ -44,7 +44,6 @@ export default class RequestHandler {
             }
 
         } catch (error) {
-            console.log('Error ' + error);
             this.responseHandler!.handleError(error);
         }
     }
@@ -60,7 +59,7 @@ export default class RequestHandler {
 
             const user = this.userController.getUser(uuid);
             if (!user) {
-                this.responseHandler!.provideResponseWithStatusCode(StatusCodes.NotFound, Errors.Message404NotFound);
+                this.responseHandler!.provideResponseWithStatusCode(StatusCodes.NotFound, JSON.stringify(Errors.Message404NotFound));
                 return;
             }
             

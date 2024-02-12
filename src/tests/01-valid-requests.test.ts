@@ -42,6 +42,7 @@ describe('CRUD API', () => {
             .end((err, res) => {
                 expect(res.status).toBe(StatusCodes.Ok);
                 expect(JSON.parse(res.text)).toHaveProperty('id');
+                expect(JSON.parse(res.text).id).toMatch(userID);
                 expect(JSON.parse(res.text)).toHaveProperty('username');
                 expect(JSON.parse(res.text)).toHaveProperty('age');
                 expect(JSON.parse(res.text)).toHaveProperty('hobbies');
