@@ -18,4 +18,8 @@ export class UserController {
     updateUser(data: User): User {
         return this.userService.updateUser(data);
     }
+
+    deleteUser(id: string): void {
+        return this.userService.deleteUser(id);
+    }
 }

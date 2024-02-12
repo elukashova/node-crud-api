@@ -13,6 +13,8 @@ export function defineAction (method: string, url: string) {
         return Actions.CreateUser;
     } else if (method === Requests.Put) {
         return Actions.UpdateUser;
+    } else if (method === Requests.Delete) {
+        return Actions.DeleteUser;
     }
 }
 

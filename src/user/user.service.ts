@@ -35,4 +35,11 @@ export class UserService {
         userDatabase.set(id, user);
         return user;
     }
+
+    public deleteUser(id: string): void {
+        const isDeleted = userDatabase.delete(id);
+        if (!isDeleted) {
+            throw new Error(Errors.Message404User);
+        }
+    }
 }

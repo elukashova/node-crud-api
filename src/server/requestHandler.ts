@@ -16,7 +16,6 @@ export default class RequestHandler {
             return;
         }
 
-        const body: unknown = await getBodyData(request);
         const uuid = getUuid(url);
         const action = defineAction(method, url);
 
@@ -28,8 +27,7 @@ export default class RequestHandler {
 
             case Actions.GetUser:
                 if (uuid) {
-                    const isValidId = isValidUuid(uuid);
-                    if (!isValidId) {
+                    if (!isValidUuid(uuid)) {
                         this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
                         return;
                     }
@@ -44,6 +42,7 @@ export default class RequestHandler {
                 break;
             
             case Actions.CreateUser:
+                const body: unknown = await getBodyData(request);
                 if (isValidUser(body)) {
                     const user = this.userController.createUser(body as UserData);
                     this.provideAnswerWithStatusCode(StatusCodes.Created, JSON.stringify(user));
@@ -53,11 +52,31 @@ export default class RequestHandler {
                 break;
 
             case Actions.UpdateUser:
-                if (isValidUser(body) && uuid) {
+                const body2: unknown = await getBodyData(request);
+                if (isValidUser(body2) && uuid) { 
+                    if (!isValidUuid(uuid)) {
+                        this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+                        return;
+                    }
+
                     const { username, age, hobbies } = body as User;
                     const updatedData = { id: uuid, username, age, hobbies };
                     const user = this.userController.updateUser(updatedData);
                     this.provideAnswerWithStatusCode(StatusCodes.Ok, JSON.stringify(user));
+                    return;
+                }
+                this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+                break;
+            
+            case Actions.DeleteUser:
+                if (uuid) {
+                    if (!isValidUuid(uuid)) {
+                        this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+                        return;
+                    }
+                    console.log('het');
+                    this.userController.deleteUser(uuid);
+                    this.provideAnswerWithStatusCode(StatusCodes.NoContent);
                     return;
                 }
                 this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
@@ -68,10 +87,10 @@ export default class RequestHandler {
         }
     }
 
-    private provideAnswerWithStatusCode(statusCode: number, output: string): void {
+    private provideAnswerWithStatusCode(statusCode: number, output?: string): void {
         if (this.response) {
             this.response.writeHead(statusCode);
-            this.response.end(output);
+            this.response.end(output || null);
         }
     }
 }
