@@ -4,10 +4,10 @@ import { validate } from 'uuid';
 import { Actions, Endpoints, Requests } from '../enums/enums';
 import { User } from '../types/user.types';
 
-export function defineAction (method: string, url: string) {
-    if (method === Requests.Get && url === Endpoints.GetUsers) {
+export function defineAction (method: string, url: string, uuid: string | null) {
+    if (method === Requests.Get && !uuid) {
         return Actions.GetUsers;
-    } else if (method === Requests.Get && url.startsWith(Endpoints.GetUser)) {
+    } else if (method === Requests.Get) {
         return Actions.GetUser;
     } else if (method === Requests.Post) {
         return Actions.CreateUser;

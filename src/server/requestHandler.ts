@@ -16,78 +16,99 @@ export default class RequestHandler {
             return;
         }
 
-        const uuid = getUuid(url);
-        const action = defineAction(method, url);
+        const uuid: string | null = getUuid(url);
+        const action: Actions | undefined = defineAction(method, url, uuid);
 
-        switch(action) {
-            case Actions.GetUsers:
-                const users = this.userController.getAllUsers();
-                this.provideAnswerWithStatusCode(StatusCodes.Ok, JSON.stringify(users));
-                break;
+        try {
+            if (action === Actions.GetUsers) {
+                this.handleGetAllUsers();
+            }
 
-            case Actions.GetUser:
-                if (uuid) {
-                    if (!isValidUuid(uuid)) {
-                        this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
-                        return;
-                    }
-                    const user = this.userController.getUser(uuid);
-                    if (!user) {
-                        this.provideAnswerWithStatusCode(StatusCodes.NotFound, Errors.Message404);
-                        return;
-                    }
-                    
-                    this.provideAnswerWithStatusCode(StatusCodes.Ok, JSON.stringify(user))
-                }
-                break;
-            
-            case Actions.CreateUser:
+            if (action === Actions.GetUser) {
+                this.handleGetUser(uuid);
+            }
+
+            if (action === Actions.CreateUser || action === Actions.UpdateUser) {
                 const body: unknown = await getBodyData(request);
-                if (isValidUser(body)) {
-                    const user = this.userController.createUser(body as UserData);
-                    this.provideAnswerWithStatusCode(StatusCodes.Created, JSON.stringify(user));
-                    return;
-                }
-                this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Body);
-                break;
 
-            case Actions.UpdateUser:
-                const body2: unknown = await getBodyData(request);
-                if (isValidUser(body2) && uuid) { 
-                    if (!isValidUuid(uuid)) {
-                        this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
-                        return;
-                    }
-
-                    const { username, age, hobbies } = body as User;
-                    const updatedData = { id: uuid, username, age, hobbies };
-                    const user = this.userController.updateUser(updatedData);
-                    this.provideAnswerWithStatusCode(StatusCodes.Ok, JSON.stringify(user));
-                    return;
+                if (action === Actions.CreateUser) {
+                    this.handleCreateUser(body);
+                } else {
+                    this.handleUpdateUser(body, uuid);
                 }
-                this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
-                break;
-            
-            case Actions.DeleteUser:
-                if (uuid) {
-                    if (!isValidUuid(uuid)) {
-                        this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
-                        return;
-                    }
-                    console.log('het');
-                    this.userController.deleteUser(uuid);
-                    this.provideAnswerWithStatusCode(StatusCodes.NoContent);
-                    return;
-                }
-                this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
-                break;
+            }
 
-            default:
-                console.log('default');
+            if (action === Actions.DeleteUser) {
+                this.handleDeleteUser(uuid);
+            }
+
+        } catch (error) {
+            console.log(error);
         }
     }
 
-    private provideAnswerWithStatusCode(statusCode: number, output?: string): void {
+    private handleGetAllUsers() {
+        const users = this.userController.getAllUsers();
+        this.provideResponseWithStatusCode(StatusCodes.Ok, JSON.stringify(users));
+    }
+
+    private handleGetUser(uuid: string | null) {
+        if (uuid) {
+            if (!isValidUuid(uuid)) {
+                this.provideResponseWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+                return;
+            }
+            const user = this.userController.getUser(uuid);
+            if (!user) {
+                this.provideResponseWithStatusCode(StatusCodes.NotFound, Errors.Message404);
+                return;
+            }
+            
+            this.provideResponseWithStatusCode(StatusCodes.Ok, JSON.stringify(user))
+        }
+    }
+
+    private handleCreateUser(body: unknown) {
+        if (isValidUser(body)) {
+            const user = this.userController.createUser(body as UserData);
+            this.provideResponseWithStatusCode(StatusCodes.Created, JSON.stringify(user));
+            return;
+        }
+        this.provideResponseWithStatusCode(StatusCodes.BadRequest, Errors.Message400Body);
+    }
+
+    private handleUpdateUser(body: unknown, uuid: string | null) {
+        if (uuid) {
+            if (isValidUser(body)) { 
+                if (!isValidUuid(uuid)) {
+                    this.provideResponseWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+                    return;
+                }
+    
+                const { username, age, hobbies } = body as User;
+                const updatedData = { id: uuid, username, age, hobbies };
+                const user = this.userController.updateUser(updatedData);
+                this.provideResponseWithStatusCode(StatusCodes.Ok, JSON.stringify(user));
+                return;
+            }
+        }
+        this.provideResponseWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+    }
+
+    private handleDeleteUser(uuid: string | null) {
+        if (uuid) {
+            if (!isValidUuid(uuid)) {
+                this.provideResponseWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+                return;
+            }
+            this.userController.deleteUser(uuid);
+            this.provideResponseWithStatusCode(StatusCodes.NoContent);
+            return;
+        }
+        this.provideResponseWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
+    }
+
+    private provideResponseWithStatusCode(statusCode: number, output?: string): void {
         if (this.response) {
             this.response.writeHead(statusCode);
             this.response.end(output || null);
