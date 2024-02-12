@@ -1,5 +1,5 @@
 import * as http from 'node:http';
-import { StatusCodes, Endpoints, Errors } from './enums/enums';
+import { StatusCodes, Endpoints, Errors } from '../enums/enums';
 import RequestHandler from './requestHandler';
 
 export class Server {
@@ -13,7 +13,6 @@ export class Server {
 
     createServer() {
         return http.createServer((request, response) => {
-            console.log(request.url);
             try {
                 if (request.url?.startsWith(Endpoints.Base)) {
                     this.requestHandler.handleRequest(request, response);

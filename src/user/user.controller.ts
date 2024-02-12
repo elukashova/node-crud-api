@@ -6,4 +6,8 @@ export class UserController {
     getAllUsers(): User[] {
         return this.userService.getAll();
     }
+
+    getUser(uuid: string): User | undefined {
+        return this.userService.getUser(uuid);
+    }
 }

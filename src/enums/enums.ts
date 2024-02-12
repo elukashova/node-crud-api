@@ -8,10 +8,10 @@ export enum Requests {
 export enum Endpoints {
   Base = '/api/users',
   GetUsers = '/api/users',
-  GetUser = '/api/users/:id',
+  GetUser = '/api/users/',
   CreateUser = '/api/users',
-  UpdateUser = '/api/users/:id',
-  DeleteUser = '/api/users/:id',
+  UpdateUser = '/api/users/',
+  DeleteUser = '/api/users/',
 }
 
 export enum StatusCodes {
@@ -25,4 +25,5 @@ export enum StatusCodes {
 
 export enum Errors {
   Message404 = 'The requested resource cannot be found by server',
+  Message400Uuid = 'Invalid UUID. Please, provide a correct one.',
 }
