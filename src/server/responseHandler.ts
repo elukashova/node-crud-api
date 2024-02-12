@@ -30,7 +30,6 @@ export class ResponseHandler {
     }
     public provideResponseWithStatusCode(statusCode: number, output?: string): void {
         if (this.response) {
-            console.log('here', statusCode);
             this.response.writeHead(statusCode);
             this.response.end(output || null);
         }
