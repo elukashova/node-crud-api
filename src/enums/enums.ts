@@ -33,6 +33,7 @@ export enum StatusCodes {
 
 export enum Errors {
   Message404 = 'The requested resource cannot be found by server',
+  Message404User = 'The user with this id cannot be found by server',
   Message400Uuid = 'Invalid UUID. Please, provide a correct one.',
   Message400Body = 'Invalid user data. Please, provide user\'s \'username\', \'age\' and [hobbies].'
 }

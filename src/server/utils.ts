@@ -4,13 +4,15 @@ import { validate } from 'uuid';
 import { Actions, Endpoints, Requests } from '../enums/enums';
 import { User } from '../types/user.types';
 
-export function defineEndpoint (method: string, url: string) {
+export function defineAction (method: string, url: string) {
     if (method === Requests.Get && url === Endpoints.GetUsers) {
         return Actions.GetUsers;
     } else if (method === Requests.Get && url.startsWith(Endpoints.GetUser)) {
         return Actions.GetUser;
     } else if (method === Requests.Post) {
         return Actions.CreateUser;
+    } else if (method === Requests.Put) {
+        return Actions.UpdateUser;
     }
 }
 

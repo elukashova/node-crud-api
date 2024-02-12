@@ -13,7 +13,7 @@ export class UserService {
         const user = Array.from(userDatabase.values()).find(user => user.id === uuid);
 
         if (!user) {
-            throw new Error(Errors.Message404);
+            throw new Error(Errors.Message404User);
         }
 
         return user;
@@ -23,6 +23,16 @@ export class UserService {
         const id = uuid4();
         const user = new NewUser(id, username, age, hobbies);
         userDatabase.set(user.id, user);
+        return user;
+    }
+
+    public updateUser(user: User): User {
+        const { id } = user; 
+        const savedUser = userDatabase.get(id) ?? null;
+        if (!savedUser) {
+            throw new Error(Errors.Message404User);
+        }
+        userDatabase.set(id, user);
         return user;
     }
 }

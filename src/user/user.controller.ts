@@ -14,4 +14,8 @@ export class UserController {
     createUser(data: UserData): User {
         return this.userService.createUser(data);
     }
+
+    updateUser(data: User): User {
+        return this.userService.updateUser(data);
+    }
 }
