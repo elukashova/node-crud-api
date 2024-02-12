@@ -5,7 +5,7 @@ import { defineAction, getUuid, isValidUuid, isValidUser } from './utils';
 import { User, UserData } from '../user/entity/user.interface';
 import { ResponseHandler } from './responseHandler';
 
-export default class RequestHandler {
+export class RequestHandler {
     private userController = new UserController();
     private responseHandler: ResponseHandler | null = null;
 
