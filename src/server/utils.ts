@@ -1,10 +1,9 @@
 
-import { IncomingMessage } from 'node:http';
 import { validate } from 'uuid';
-import { Actions, Endpoints, Requests } from '../enums/enums';
-import { User } from '../types/user.types';
+import { Actions, Requests } from '../enums/enums';
+import { User } from '../user/entity/user.interface';
 
-export function defineAction (method: string, url: string, uuid: string | null) {
+export function defineAction (method: string, uuid: string | null) {
     if (method === Requests.Get && !uuid) {
         return Actions.GetUsers;
     } else if (method === Requests.Get) {
@@ -35,21 +34,9 @@ export function isValidUser(obj: unknown): obj is User {
 }
 
 export function getUuid(url: string): string | null {
-    return url.slice(url.lastIndexOf('/') + 1);
+    return url.split('api/users/')[1];
 }
 
 export function isValidUuid(userUuid: string): boolean {
     return validate(userUuid);
-}
-
-export function getBodyData(request: IncomingMessage): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-        const bodyChunks: Buffer[] = [];
-        request.on('data', (chunk: Buffer) => bodyChunks.push(chunk));
-        request.on('error', reject);
-        request.on('end', () => {
-            const body = Buffer.concat(bodyChunks).toString();
-            resolve(JSON.parse(body));
-        });
-    });
 }

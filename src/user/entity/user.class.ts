@@ -1,4 +1,4 @@
-import { User } from '../types/user.types';
+import { User } from './user.interface';
 
 export class NewUser implements User {
     constructor(

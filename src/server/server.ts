@@ -17,20 +17,20 @@ export class Server {
                 if (request.url?.startsWith(Endpoints.Base)) {
                     this.requestHandler.handleRequest(request, response);
                     return;
+                } else {
+                    response.writeHead(StatusCodes.NotFound);
+                    response.end(Errors.Message404Endpoint);
                 }
             } catch (error) {
-                response.writeHead(StatusCodes.NotFound);
-                response.end(Errors.Message404);
+                response.writeHead(StatusCodes.InternalServerError);
+                response.end(Errors.Message500Server);
             }
         });
     }
 
     startListening(port: number) {
         this.server.listen(port, () => {
-            console.log(
-                "I'm listening",
-                this.port,
-            );
+            console.log(`You are listening to ${port} FM`);
         });
     }
 }

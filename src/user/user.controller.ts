@@ -1,4 +1,4 @@
-import { User, UserData } from '../types/user.types';
+import { User, UserData } from './entity/user.interface';
 import { UserService } from './user.service';
 
 export class UserController {

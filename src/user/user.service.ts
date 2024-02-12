@@ -1,8 +1,8 @@
 import { v4 as uuid4 } from 'uuid';
 import { userDatabase } from '../data/user.data';
 import { Errors } from '../enums/enums';
-import { User, UserData } from '../types/user.types';
-import { NewUser } from './user';
+import { User, UserData } from './entity/user.interface';
+import { NewUser } from './entity/user.class';
 
 export class UserService {
     public getAll(): User[] {
