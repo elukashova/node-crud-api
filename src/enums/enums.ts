@@ -5,6 +5,14 @@ export enum Requests {
   Delete = 'DELETE',
 }
 
+export enum Actions {
+  GetUsers,
+  GetUser,
+  CreateUser,
+  UpdateUser,
+  DeleteUser,
+}
+
 export enum Endpoints {
   Base = '/api/users',
   GetUsers = '/api/users',
@@ -26,4 +34,5 @@ export enum StatusCodes {
 export enum Errors {
   Message404 = 'The requested resource cannot be found by server',
   Message400Uuid = 'Invalid UUID. Please, provide a correct one.',
+  Message400Body = 'Invalid user data. Please, provide user\'s \'username\', \'age\' and [hobbies].'
 }

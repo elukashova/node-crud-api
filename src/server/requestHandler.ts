@@ -1,30 +1,32 @@
 import * as http from 'node:http';
-import { validate } from 'uuid';
-import { Endpoints, Errors, Requests, StatusCodes } from '../enums/enums';
+import { Actions, Endpoints, Errors, Requests, StatusCodes } from '../enums/enums';
 import { UserController } from '../user/user.controller';
+import { defineEndpoint, getUuid, isValidUuid, getBodyData, isValidUser } from './utils';
+import { UserData } from '../types/user.types';
 
 export default class RequestHandler {
     private userController = new UserController();
     private response: http.ServerResponse | null = null;
 
-    public handleRequest({ method, url }: http.IncomingMessage, response: http.ServerResponse ) {
+    public async handleRequest(request: http.IncomingMessage, response: http.ServerResponse ) {
+        const { method, url } = request;
         if (!method || !url) {
             return;
         }
 
         this.response = response;
-        const endpoint = this.defineEndpoint(method, url);
+        const endpoint = defineEndpoint(method, url);
 
         switch(endpoint) {
-            case Endpoints.GetUsers:
+            case Actions.GetUsers:
                 const users = this.userController.getAllUsers();
                 this.provideAnswerWithStatusCode(StatusCodes.Ok, JSON.stringify(users));
                 break;
 
-            case Endpoints.GetUser:
-                const uuid = this.getUuid(url);
+            case Actions.GetUser:
+                const uuid = getUuid(url);
                 if (uuid) {
-                    const isValidId = this.isValidUuid(uuid);
+                    const isValidId = isValidUuid(uuid);
                     if (!isValidId) {
                         this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Uuid);
                         return;
@@ -38,25 +40,20 @@ export default class RequestHandler {
                     this.provideAnswerWithStatusCode(StatusCodes.Ok, JSON.stringify(user))
                 }
                 break;
+            
+            case Actions.CreateUser:
+                const body: unknown = await getBodyData(request);
+                if (isValidUser(body)) {
+                    const user = this.userController.createUser(body as UserData);
+                    this.provideAnswerWithStatusCode(StatusCodes.Created, JSON.stringify(user));
+                    return;
+                }
+                this.provideAnswerWithStatusCode(StatusCodes.BadRequest, Errors.Message400Body);
+                break;
+
             default:
                 console.log('default');
         }
-    }
-
-    private defineEndpoint (method: string, url: string) {
-        if (method === Requests.Get && url === Endpoints.GetUsers) {
-            return Endpoints.GetUsers;
-        } else if (method === Requests.Get && url.startsWith(Endpoints.GetUser)) {
-            return Endpoints.GetUser;
-        }
-    }
-
-    private getUuid(url: string): string | null {
-        return url.slice(url.lastIndexOf('/') + 1);
-    }
-
-    private isValidUuid(userUuid: string): boolean {
-        return validate(userUuid);
     }
 
     private provideAnswerWithStatusCode(statusCode: number, output: string): void {

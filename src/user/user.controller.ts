@@ -1,4 +1,4 @@
-import { User } from '../types/user.types';
+import { User, UserData } from '../types/user.types';
 import { UserService } from './user.service';
 
 export class UserController {
@@ -9,5 +9,9 @@ export class UserController {
 
     getUser(uuid: string): User | undefined {
         return this.userService.getUser(uuid);
+    }
+
+    createUser(data: UserData): User {
+        return this.userService.createUser(data);
     }
 }
