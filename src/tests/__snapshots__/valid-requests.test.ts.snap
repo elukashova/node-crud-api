@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CRUD API should create a new user 1`] = `
+{
+  "age": 10,
+  "hobbies": [
+    "test",
+    "test",
+  ],
+  "id": Any<String>,
+  "username": "test",
+}
+`;
